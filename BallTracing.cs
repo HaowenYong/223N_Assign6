@@ -8,8 +8,14 @@ public class BallTracing : Form
 {	Button go = new Button();
 	Button pause = new Button();
 	Button exit = new Button();
-
-	private Timer 
+	
+	// timers and timers-related variables
+	private static System.Timers.Timer animation_clock = new System.Timers.Timer();
+	private static System.Timers.Timer refresh_clock = new System.Timers.Timer();
+	private const double delta = 1.0;
+	private const double refresh_rate = 30.0; // how many timers the frame is repaineted
+	private const double update_rate = 100.0; // how many times the coordinates of the dot is updated each second
+	private const double time_converter = 1000.0; // number of milliseconds per second
 
 	public BallTracing()
 	{	Size = new Size(1600, 900);
