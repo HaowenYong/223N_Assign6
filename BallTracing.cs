@@ -14,15 +14,14 @@ public class BallTracing : Form
 	private static System.Timers.Timer refresh_clock = new System.Timers.Timer();
 	private double delta = 0.1;
 	private const double refresh_rate = 30.0; // how many timers the frame is repaineted
-	private const double update_rate = 100.0; // how many times the coordinates of the dot is updated each second
+	private const double update_rate = 5000.0; // how many times the coordinates of the dot is updated each second
 	private const double time_converter = 1000.0; // number of milliseconds per second
 
 	Point center = new Point(800, 400);
-	private int x;
-	private int y;
-	private int previous_x = 0;
-	private int previous_y = 0;
-	private double t = 0.0;
+	private double x;
+	private double y;
+	private double derivative;
+	private double t = 1.0;
 	private const double center_x = 800.0;
 	private const double center_y = 400.0;
 	private const double dot_radius = 5.0;
@@ -120,8 +119,11 @@ public class BallTracing : Form
 
 	// x=r*cos(t), y=r*sin(t), r=sqrt(t)
 	protected void update_position(System.Object sender, ElapsedEventArgs even)
-	{	t = t + delta;
-		double r = System.Math.Sqrt(t);
+	{	double r = System.Math.Sqrt(t);
+		derivative = System.Math.Sqrt(1.0/(4.0*t) + t);
+		derivative = derivative * 4.0;
+		t = t + delta/derivative;
+
 		double x_math = r * System.Math.Cos(t);
 		double y_math = r * System.Math.Sin(t);
 		double x_scaled = x_math * scale_factor;
@@ -131,18 +133,16 @@ public class BallTracing : Form
 		double x_corner = x_csharp - dot_radius;
 		double y_corner = y_csharp - dot_radius;
 
-		x = (int)System.Math.Round(x_corner);
-		y = (int)System.Math.Round(y_corner);
+		//x = (int)System.Math.Round(x_corner);
+		//y = (int)System.Math.Round(y_corner);
+		x = x_corner;
+		y = y_corner;
 	}
 
 	protected void update_graphics(System.Object sender, ElapsedEventArgs even)
 	{	if(x>0 && x<=1600)
 		{	if(y>0 && y<= 800)
-			{	pointer_to_graphic_surface.FillEllipse(ballBrush, x, y, 2, 2);
-				if(previous_x != 0 && previous_y != 0)
-					pointer_to_graphic_surface.DrawLine(spiral_pen, previous_x, previous_y, x, y);
-				previous_x = x;
-				previous_y = y;
+			{	pointer_to_graphic_surface.FillEllipse(ballBrush, (float)x, (float)y, (float)2.0, (float)2.0);
 			}
 			else
 			{	refresh_clock.Enabled = false;
